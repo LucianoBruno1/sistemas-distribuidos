@@ -12,7 +12,7 @@ def home():
 
 @io.on('sendMessage')
 def send_message_handler(msg):
-    emit('getMessage', msg, json=True)
+    emit('getMessage', msg, broadcast=True)
 
 
 if __name__ == '__main__':
