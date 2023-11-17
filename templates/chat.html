@@ -37,6 +37,13 @@
         window.onload = function(){
             const socket = io('http://127.0.0.1:5000')
 
+            function addToChat(msg){
+                const span = document.createElement("span");
+                const chat = document.querySelector(".chat");
+                span.innerHTML= `<strong>${msg.name}:</strong> ${msg.message}`
+                chat.append(span);
+            }
+
             socket.on('connect', () => {
                 socket.send('Usuário conectado ao socket')
             })
@@ -51,10 +58,13 @@
             })
             
             socket.on('getMessage', (msg) =>{
-                const span = document.createElement("span");
-                const chat = document.querySelector(".chat");
-                span.innerHTML= `<strong>${msg.name}:</strong> ${msg.message}`
-                chat.append(span);
+              addToChat(msg)
+            })
+
+            socket.on('message',(msgs) =>{
+                for(msg of msgs){
+                    addToChat(msg);
+                }
             })
         }
     </script>
