@@ -34,42 +34,39 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
 
     <script>
-        window.onload = function () {
-            const socket = io.connect('http://127.0.0.1:5000');
-    
-            function addToChat(msg) {
+        window.onload = function(){
+            const socket = io('http://127.0.0.1:5000')
+
+            function addToChat(msg){
                 const span = document.createElement("span");
                 const chat = document.querySelector(".chat");
-
-                // Use as propriedades 'name' e 'message' do objeto msg
-                const name = msg && msg.split(':')[0] ? msg.split(':')[0] : "Desconhecido";
-                const message = msg && msg.split(':')[1] ? msg.split(':')[1] : "";
-
-                span.innerHTML = `<strong>${name}:</strong> ${message}`;
+                span.innerHTML= `<strong>${msg.name}:</strong> ${msg.message}`
                 chat.append(span);
             }
 
-    
-            document.querySelector("form").addEventListener("submit", function (event) {
-                event.preventDefault();
-    
-                // Enviar o nome e a mensagem para o servidor
-                const name = event.target[0].value;
-                const message = event.target[1].value;
-    
+            socket.on('connect', () => {
+                socket.send('Usuário conectado ao socket')
+            })
 
-                //USANDO PRA DEBUGAR NO NAVEGADOR E VER SE ESTOU ENVIANDO O NOME DO USUÁRIO PARA O SERVIDOR
-                console.log('Nome do remetente:', name); // Adicione esta linha para imprimir no console
-                socket.emit('sendMessage', { name, message });
-    
-                event.target[1].value = '';  // Limpar o campo de mensagem
-            });
-    
-            socket.on('getMessage', (msg) => {
-                addToChat(msg);
-            });
-        };
+            document.querySelector("form").addEventListener("submit", function(event){
+                event.preventDefault();
+           
+
+                socket.emit('sendMessage', {name: event.target[0].value, message: event.target[1].value})
+                name = "";
+                message = "";
+            })
+            
+            socket.on('getMessage', (msg) =>{
+              addToChat(msg)
+            })
+
+            socket.on('message',(msgs) =>{
+                for(msg of msgs){
+                    addToChat(msg);
+                }
+            })
+        }
     </script>
-    
 </body>
 </html>
