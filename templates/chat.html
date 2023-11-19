@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat distribuido</title>
+    <title>Chat distribuído</title>
     <style>
         .chat {
             display: flex;
@@ -12,21 +12,20 @@
         .chat span {
             margin-bottom: 10px;
         }
-        form{
+        form {
             margin-top: 10px;
         }
-
     </style>
 </head>
 
 <body>
-    <div class="chat">
-    </div>
+    <div class="chat"></div>
 
     <div class="formulario">
         <form action="">
             <input type="text" name="nome" id="nome" placeholder="Insira seu nome">
             <input type="text" name="mensagem" id="mensagem" placeholder="Mensagem">
+            <input type="text" name="sala" id="sala" placeholder="Nome da Sala">
             <button type="submit">Enviar</button>
         </form>
     </div>
@@ -40,32 +39,46 @@
             function addToChat(msg){
                 const span = document.createElement("span");
                 const chat = document.querySelector(".chat");
-                span.innerHTML= `<strong>${msg.name}:</strong> ${msg.message}`
+                span.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`
                 chat.append(span);
             }
 
             socket.on('connect', () => {
                 socket.send('Usuário conectado ao socket')
-            })
+            });
 
             document.querySelector("form").addEventListener("submit", function(event){
                 event.preventDefault();
-           
 
-                socket.emit('sendMessage', {name: event.target[0].value, message: event.target[1].value})
-                name = "";
-                message = "";
-            })
-            
+                const name = event.target[0].value;
+                const message = event.target[1].value;
+                const room = event.target[2].value;
+
+                socket.emit('sendMessage', {name, message, room});
+                event.target[1].value = "";  // Limpar campo de mensagem
+            });
+
             socket.on('getMessage', (msg) =>{
-              addToChat(msg)
-            })
+                addToChat(msg);
+            });
 
             socket.on('message',(msgs) =>{
-                for(msg of msgs){
+                for(const msg of msgs){
                     addToChat(msg);
                 }
-            })
+            });
+
+            // Adicionar lógica para entrar em uma sala
+            document.querySelector("#sala").addEventListener("change", function(event){
+                const room = event.target.value;
+                socket.emit('join', {room});
+            });
+
+            // Adicionar lógica para sair de uma sala
+            window.addEventListener("beforeunload", function(){
+                const room = document.querySelector("#sala").value;
+                socket.emit('leave', {room});
+            });
         }
     </script>
 </body>
