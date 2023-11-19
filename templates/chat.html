@@ -88,7 +88,7 @@
                 const chat = document.getElementById("chat-container");
                 span.className = "message";
                 span.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
-                chat.append(span);
+                chat.prepend(span);
             }
 
             socket.on('connect', () => {
@@ -103,7 +103,6 @@
                     addToChat(msg);
                 }
             });
-
             document.getElementById("chat-form").addEventListener("submit", function (event) {
                 event.preventDefault();
 
