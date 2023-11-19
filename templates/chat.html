@@ -5,79 +5,116 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat distribuído</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        .chat-container {
+            max-height: 400px; /* Altura máxima da caixa de chat */
+            overflow-y: auto; /* Adiciona uma barra de rolagem quando necessário */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
         .chat {
             display: flex;
-            flex-direction: column;
+            flex-direction: column-reverse; /* Alinha as mensagens do final para o início */
         }
-        .chat span {
-            margin-bottom: 10px;
+
+        .message {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            max-width: 70%; /* Largura máxima das mensagens */
+            align-self: flex-start; /* Alinha as mensagens do usuário à esquerda */
         }
-        form {
+
+        .message strong {
+            color: #333;
+        }
+
+        .formulario {
             margin-top: 10px;
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            padding: 10px;
+            flex: 1;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body>
-    <div class="chat"></div>
+    <div class="chat-container">
+        <div class="chat" id="chat-container">
+        </div>
+    </div>
 
     <div class="formulario">
-        <form action="">
+        <form id="chat-form">
             <input type="text" name="nome" id="nome" placeholder="Insira seu nome">
             <input type="text" name="mensagem" id="mensagem" placeholder="Mensagem">
-            <input type="text" name="sala" id="sala" placeholder="Nome da Sala">
             <button type="submit">Enviar</button>
         </form>
     </div>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
 
     <script>
-        window.onload = function(){
-            const socket = io('http://127.0.0.1:5000')
+        window.onload = function () {
+            const socket = io('http://127.0.0.1:5000/chat');
 
-            function addToChat(msg){
+            function addToChat(msg) {
                 const span = document.createElement("span");
-                const chat = document.querySelector(".chat");
-                span.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`
+                const chat = document.getElementById("chat-container");
+                span.className = "message";
+                span.innerHTML = `<strong>${msg.name}:</strong> ${msg.message}`;
                 chat.append(span);
             }
 
             socket.on('connect', () => {
-                socket.send('Usuário conectado ao socket')
+                socket.emit('join', { room: 'default' });
             });
 
-            document.querySelector("form").addEventListener("submit", function(event){
-                event.preventDefault();
+            socket.on('message', (msgs) => {
+                const chatContainer = document.getElementById("chat-container");
+                chatContainer.innerHTML = '';
 
-                const name = event.target[0].value;
-                const message = event.target[1].value;
-                const room = event.target[2].value;
-
-                socket.emit('sendMessage', {name, message, room});
-                event.target[1].value = "";  // Limpar campo de mensagem
-            });
-
-            socket.on('getMessage', (msg) =>{
-                addToChat(msg);
-            });
-
-            socket.on('message',(msgs) =>{
-                for(const msg of msgs){
+                for (msg of msgs) {
                     addToChat(msg);
                 }
             });
 
-            // Adicionar lógica para entrar em uma sala
-            document.querySelector("#sala").addEventListener("change", function(event){
-                const room = event.target.value;
-                socket.emit('join', {room});
-            });
+            document.getElementById("chat-form").addEventListener("submit", function (event) {
+                event.preventDefault();
 
-            // Adicionar lógica para sair de uma sala
-            window.addEventListener("beforeunload", function(){
-                const room = document.querySelector("#sala").value;
-                socket.emit('leave', {room});
+                socket.emit('send_message', {
+                    name: event.target[0].value,
+                    message: event.target[1].value,
+                    room: 'default'
+                });
+
+                location.reload()
+                event.target[1].value = "";
             });
         }
     </script>
