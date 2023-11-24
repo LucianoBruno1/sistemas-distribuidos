@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: chat
+  template:
+    metadata:
+      labels:
+        app: chat
+    spec:
+      containers:
+      - name: backend-container
+        image: python:3.8
+        ports:
+        - containerPort: 5000
+      - name: frontend-container
+        image: nginx:latest
+        ports:
+        - containerPort: 80
