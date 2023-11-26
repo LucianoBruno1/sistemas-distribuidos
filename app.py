@@ -16,7 +16,8 @@ class Message(db.Model):
     message = db.Column(db.String(500))
 
 # Configuração RabbitMQ
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+# Configuração RabbitMQ
+connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', port=5672, heartbeat=600))
 channel = connection.channel()
 channel.queue_declare(queue='chat_messages')
 
