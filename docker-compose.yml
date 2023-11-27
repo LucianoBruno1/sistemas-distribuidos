@@ -20,5 +20,14 @@ services:
     networks:
       - app_network
 
+  nginx-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile_front
+    ports:
+      - "8080:80"
+    networks:
+      - app_network
+
 networks:
   app_network:
