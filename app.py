@@ -5,7 +5,7 @@ import pika
 import os
 
 app = Flask(__name__)
-io = SocketIO(app)
+io = SocketIO(app, cors_allowed_origins='*') #Comando para permitir que qualquer origem acesse o socketIO
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path, 'chat.db')
 db = SQLAlchemy(app)
 
