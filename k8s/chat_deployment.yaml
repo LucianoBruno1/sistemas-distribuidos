@@ -1,23 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chat-deployment
+  name: chat-app
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
-      app: chat
+      app: chat-app
   template:
     metadata:
       labels:
-        app: chat
+        app: chat-app
     spec:
       containers:
-      - name: backend-container
-        image: python:3.8
-        ports:
-        - containerPort: 5000
-      - name: frontend-container
-        image: nginx:latest
-        ports:
-        - containerPort: 80
+      
+name: chat-app
+      image: kaciosilva/flask-img:latest
+      ports:
+containerPort: 5000

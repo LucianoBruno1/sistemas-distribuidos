@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import pika
 import os
 
-app = Flask(__name__)
+app = Flask(_name_)
 io = SocketIO(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path, 'chat.db')
 db = SQLAlchemy(app)
@@ -58,7 +58,7 @@ class ChatNamespace(Namespace):
 # Registro do namespace
 io.on_namespace(ChatNamespace('/chat'))
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     # Criação das tabelas dentro do contexto da aplicação
     with app.app_context():
         db.create_all()

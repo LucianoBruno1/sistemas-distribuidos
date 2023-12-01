@@ -4,8 +4,9 @@ metadata:
   name: chat-service
 spec:
   selector:
-    app: chat
+    app: chat-app  # Alterado para corresponder ao rótulo usado no deployment
   ports:
   - protocol: TCP
     port: 80
-    targetPort: 80
+    targetPort: 5000
+  type: NodePort
