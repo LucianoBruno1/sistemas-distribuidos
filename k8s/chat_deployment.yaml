@@ -13,8 +13,7 @@ spec:
         app: chat-app
     spec:
       containers:
-      
-name: chat-app
-      image: kaciosilva/flask-img:latest
-      ports:
-containerPort: 5000
+        - name: chat-app
+          image: kaciosilva/flask-img:latest
+          ports:
+            - containerPort: 5000

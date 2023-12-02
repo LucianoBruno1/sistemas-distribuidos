@@ -58,7 +58,7 @@ class ChatNamespace(Namespace):
 # Registro do namespace
 io.on_namespace(ChatNamespace('/chat'))
 
-if __name__ == '_main_':
+if __name__ == '__main__':
     # Criação das tabelas dentro do contexto da aplicação
     with app.app_context():
         db.create_all()
